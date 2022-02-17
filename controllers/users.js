@@ -1,3 +1,5 @@
+const bcryptjs = require('bcryptjs');
+
 const User = require('../models/user');
 
 const usersGet = async (req, res) => {
@@ -21,32 +23,22 @@ const userGet = async (req, res) => {
 };
 
 const usersPost = async (req, res) => {
-  const { body } = req;
+  const { name, email, password } = req.body;
 
-  try {
-    const emailExists = await User.findOne({
-      where: {
-        email: body.email,
-      },
-    });
+  const user = new User({ name, email, password });
 
-    if (emailExists) {
-      return res.status(400).json({
-        msg: 'There is already a user with the email ' + body.email,
-      });
-    }
+  // Encrypt the password
+  const salt = bcryptjs.genSaltSync();
 
-    const user = User.build(body);
-    await user.save();
+  user.password = bcryptjs.hashSync(password, salt);
 
-    res.json(user);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      msg: 'Talk to the Administrator',
-    });
-  }
+  User.build(user);
+
+  await user.save();
+
+  res.json(user);
 };
+
 const usersPut = async (req, res) => {
   const { id } = req.params;
   const { body } = req;
