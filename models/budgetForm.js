@@ -1,19 +1,22 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db/connection');
 
-const User = db.define('User', {
-  name: {
+const BudgetForm = db.define('BudgetForm', {
+  concept: {
     type: DataTypes.STRING,
   },
-  email: {
+  amount: {
+    type: DataTypes.FLOAT,
+  },
+  type: {
     type: DataTypes.STRING,
   },
-  password: {
-    type: DataTypes.STRING,
+  userId: {
+    type: DataTypes.INTEGER,
   },
   state: {
     type: DataTypes.BOOLEAN,
   },
 });
 
-module.exports = User;
+module.exports = BudgetForm;

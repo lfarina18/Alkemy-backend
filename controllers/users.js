@@ -3,7 +3,10 @@ const bcryptjs = require('bcryptjs');
 const User = require('../models/user');
 
 const usersGet = async (req, res) => {
-  const users = await User.findAll();
+  const users = await User.findAll({
+    where: { state: '1' },
+    attributes: { exclude: ['password'] },
+  });
 
   res.json({ users });
 };
@@ -11,9 +14,11 @@ const usersGet = async (req, res) => {
 const userGet = async (req, res) => {
   const { id } = req.params;
 
-  const user = await User.findByPk(id);
+  const user = await User.findByPk(id, {
+    attributes: { exclude: ['password'] },
+  });
 
-  if (user) {
+  if (user && user.state) {
     res.json(user);
   } else {
     res.status(404).json({
@@ -41,25 +46,25 @@ const usersPost = async (req, res) => {
 
 const usersPut = async (req, res) => {
   const { id } = req.params;
-  const { body } = req;
+  const user = await User.findByPk(id);
+  const { name, password, ...rest } = req.body;
 
-  try {
-    const user = await User.findByPk(id);
-    if (!user) {
-      return res.status(400).json({
-        msg: 'There is no user with the id ' + id,
-      });
-    }
-
-    await user.update(body);
-
-    res.json(user);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      msg: 'Talk to the Administrator',
-    });
+  if (password) {
+    const salt = bcryptjs.genSaltSync();
+    rest.password = bcryptjs.hashSync(password, salt);
   }
+
+  await user.update(
+    {
+      name,
+      ...rest,
+    },
+    {
+      where: { id },
+    }
+  );
+
+  res.json(user);
 };
 
 const usersDelete = async (req, res) => {

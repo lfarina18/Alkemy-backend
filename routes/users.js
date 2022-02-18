@@ -8,7 +8,7 @@ const {
   usersPost,
   usersDelete,
 } = require('../controllers/users');
-const { emailExists } = require('../helpers/db-validators');
+const { emailExists, exitsUserById } = require('../helpers/db-validators');
 const { validateFields } = require('../middlewares/validate-fields');
 
 const router = Router();
@@ -25,7 +25,12 @@ router.post('/',[
   validateFields
 
 ], usersPost);
-router.put('/:id', usersPut);
+router.put('/:id', [
+  check('id').custom(exitsUserById),
+  check('name', 'Name is required').not().isEmpty(),
+  check('password', 'The password must be more than 8 characters including numbers, uppercase, lowercase and symbols ').isStrongPassword(),
+  validateFields
+], usersPut);
 router.delete('/:id', usersDelete);
 
 module.exports = router;

@@ -1,14 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 const userRoutes = require('../routes/users');
-const { db } = require('../db/connection');
+const budgetFormRoutes = require('../routes/budgetForm');
+const db = require('../db/connection');
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8080;
     this.host = process.env.HOST || '0.0.0.0';
-    this.usersPath = '/api/users';
+
+    this.paths = {
+      users: '/api/users',
+      budgetForm: '/api/budgetform'
+    }
+
 
     // Initial methods
     this.dbConnection();
@@ -38,7 +44,8 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.usersPath, userRoutes);
+    this.app.use(this.paths.users, userRoutes);
+    this.app.use(this.paths.budgetForm, budgetFormRoutes);
   }
 
   listen() {

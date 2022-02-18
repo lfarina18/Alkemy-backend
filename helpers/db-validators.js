@@ -12,4 +12,11 @@ const emailExists = async (email = '') => {
   }
 };
 
-module.exports = { emailExists };
+const exitsUserById = async (id) => {
+  const exitsUser = await User.findByPk(id);
+  if (!exitsUser) {
+    throw new Error(`The id: ${id} does not exist`);
+  }
+};
+
+module.exports = { emailExists, exitsUserById };
