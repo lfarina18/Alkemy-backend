@@ -1,11 +1,18 @@
 const bcryptjs = require('bcryptjs');
 
 const User = require('../models/user');
+const BudgetForm = require('../models/BudgetForm');
 
 const usersGet = async (req, res) => {
   const users = await User.findAll({
     where: { state: '1' },
-    attributes: { exclude: ['password'] },
+    include: {
+      model: BudgetForm,
+      attributes: ['concept'],
+    },
+    attributes: {
+      exclude: ['password'],
+    },
   });
 
   res.json({ users });

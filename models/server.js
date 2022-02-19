@@ -3,6 +3,7 @@ const cors = require('cors');
 const userRoutes = require('../routes/users');
 const budgetFormRoutes = require('../routes/budgetForm');
 const db = require('../db/connection');
+require('../db/associations');
 
 class Server {
   constructor() {
@@ -12,9 +13,8 @@ class Server {
 
     this.paths = {
       users: '/api/users',
-      budgetForm: '/api/budgetform'
-    }
-
+      budgetForm: '/api/budgetform',
+    };
 
     // Initial methods
     this.dbConnection();
@@ -27,6 +27,8 @@ class Server {
     try {
       await db.authenticate();
       console.log('Connection has been established successfully.');
+      await db.sync({ force: false });
+      console.log('All models were synchronized successfully.');
     } catch (error) {
       console.error('Unable to connect to the database:', error);
     }
