@@ -1,3 +1,4 @@
+const BudgetForm = require('../models/budgetForm');
 const User = require('../models/user');
 
 const emailExists = async (email = '') => {
@@ -14,9 +15,17 @@ const emailExists = async (email = '') => {
 
 const exitsUserById = async (id) => {
   const exitsUser = await User.findByPk(id);
-  if (!exitsUser) {
+  
+  if (!exitsUser || !exitsUser.state) {
     throw new Error(`The id: ${id} does not exist`);
   }
 };
 
-module.exports = { emailExists, exitsUserById };
+const exitsItemById = async (id) => {
+  const item = await BudgetForm.findByPk(id);
+  if (!item) {
+    throw new Error(`The item: ${id} does not exist`);
+  }
+};
+
+module.exports = { emailExists, exitsItemById, exitsUserById };

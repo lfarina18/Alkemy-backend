@@ -15,8 +15,8 @@ const { validateFields, validateJWT, isAdminRole } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', usersGet);
-router.get('/:id', userGet);
+router.get('/', [validateJWT, isAdminRole, validateFields], usersGet);
+router.get('/:id', [check('id').custom(exitsUserById)], userGet);
 router.post(
   '/',
   [
