@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const userRoutes = require('../routes/users');
 const budgetFormRoutes = require('../routes/budgetForm');
+const authRoutes = require('../routes/auth');
 const db = require('../db/connection');
 require('../db/associations');
 
@@ -14,6 +15,7 @@ class Server {
     this.paths = {
       users: '/api/users',
       budgetForm: '/api/budgetform',
+      auth: '/api/auth',
     };
 
     // Initial methods
@@ -27,7 +29,7 @@ class Server {
     try {
       await db.authenticate();
       console.log('Connection has been established successfully.');
-      await db.sync({ force: false });
+      await db.sync({ alter: true });
       console.log('All models were synchronized successfully.');
     } catch (error) {
       console.error('Unable to connect to the database:', error);
@@ -46,8 +48,9 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.paths.users, userRoutes);
+    this.app.use(this.paths.auth, authRoutes);
     this.app.use(this.paths.budgetForm, budgetFormRoutes);
+    this.app.use(this.paths.users, userRoutes);
   }
 
   listen() {

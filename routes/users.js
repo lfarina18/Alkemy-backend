@@ -8,8 +8,10 @@ const {
   usersPost,
   usersDelete,
 } = require('../controllers/users');
+
 const { emailExists, exitsUserById } = require('../helpers/db-validators');
-const { validateFields } = require('../middlewares/validate-fields');
+
+const { validateFields, validateJWT, isAdminRole } = require('../middlewares');
 
 const router = Router();
 
@@ -45,6 +47,10 @@ router.put(
   usersPut
 );
 
-router.delete('/:id', usersDelete);
+router.delete(
+  '/:id',
+  [validateJWT, isAdminRole, check('id').custom(exitsUserById), validateFields],
+  usersDelete
+);
 
 module.exports = router;

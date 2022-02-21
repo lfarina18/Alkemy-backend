@@ -4,15 +4,18 @@ const User = require('../models/user');
 const BudgetForm = require('../models/BudgetForm');
 
 const usersGet = async (req, res) => {
-  const users = await User.findAll({
+ 
+  const users = await User.findAndCountAll({
     where: { state: '1' },
-    include: {
-      model: BudgetForm,
-      attributes: ['concept'],
-    },
+    // include: {
+    //   model: BudgetForm,
+    //   attributes: ['concept'],
+    // },
     attributes: {
       exclude: ['password'],
     },
+    limit: 5,
+    offset: 0,
   });
 
   res.json({ users });
@@ -35,9 +38,9 @@ const userGet = async (req, res) => {
 };
 
 const usersPost = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
-  const user = new User({ name, email, password });
+  const user = new User({ name, email, password, role });
 
   // Encrypt the password
   const salt = bcryptjs.genSaltSync();
@@ -54,7 +57,7 @@ const usersPost = async (req, res) => {
 const usersPut = async (req, res) => {
   const { id } = req.params;
   const user = await User.findByPk(id);
-  const { name, password, ...rest } = req.body;
+  const { password, ...rest } = req.body;
 
   if (password) {
     const salt = bcryptjs.genSaltSync();
@@ -62,13 +65,7 @@ const usersPut = async (req, res) => {
   }
 
   await user.update(
-    {
-      name,
-      ...rest,
-    },
-    {
-      where: { id },
-    }
+    { ...rest }, { where: { id }}
   );
 
   res.json(user);
