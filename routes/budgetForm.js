@@ -18,6 +18,7 @@ router.post(
   '/',
   [
     check('concept', 'Concept is required').not().isEmpty(),
+    check('type', 'Type is required').not().isEmpty(),
     check('amount', 'Amount is required').not().isEmpty(),
     check('amount', 'The amount must be a valid number').isNumeric(),
     validateFields,

@@ -2,11 +2,11 @@ const BudgetForm = require('../models/budgetForm');
 
 const BudgetFormGet = async (req, res) => {
   const { userId } = req.params;
-  const data = await BudgetForm.findAndCountAll({
+  const data = await BudgetForm.findAll({
     where: { state: '1', userId },
   });
 
-  res.json({ data });
+  res.json( data );
 };
 
 const BudgetFormPost = async (req, res) => {
